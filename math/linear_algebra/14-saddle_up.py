@@ -9,3 +9,4 @@ def np_matmul(mat1, mat2):
     """Matrix multiplication"""
 
     return np.matmul(mat1, mat2)
+
