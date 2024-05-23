@@ -1,4 +1,5 @@
-ng the inverse matrix of a matrix"""
+#!/usr/bin/env python3
+"""Getting the inverse matrix of a matrix"""
 
 
 def inverse(matrix):

@@ -1,4 +1,5 @@
-ng the adjugate matrix of a matrix"""
+#!/usr/bin/env python3
+"""Getting the adjugate matrix of a matrix"""
 
 
 def adjugate(matrix):

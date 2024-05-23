@@ -1,4 +1,5 @@
-ng the cofactor"""
+#!/usr/bin/env python3
+"""Getting the cofactor"""
 
 
 def cofactor(matrix):
