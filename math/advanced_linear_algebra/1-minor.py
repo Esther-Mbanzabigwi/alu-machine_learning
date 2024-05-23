@@ -1,4 +1,5 @@
-ng the minor matrix of a matrix"""
+#!/usr/bin/env python3
+"""Getting the minor matrix of a matrix"""
 
 
 def determinant(matrix):
