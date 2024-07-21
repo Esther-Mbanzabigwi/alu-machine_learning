@@ -10,6 +10,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Prediction App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       home: PredictionPage(),
     );
   }
@@ -21,31 +25,52 @@ class PredictionPage extends StatefulWidget {
 }
 
 class _PredictionPageState extends State<PredictionPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _tvController = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   String _result = '';
+  bool _isLoading = false;
 
   Future<void> _predict() async {
-    if (!_formKey.currentState!.validate()) {
+    final tvValue = int.tryParse(_controller.text);
+    if (tvValue == null || tvValue <= 0) {
+      setState(() {
+        _result = 'Please enter a valid TV value.';
+      });
       return;
     }
 
-    final url =
-        'https://regg-api-vgpo.onrender.com/docs#/default/make_prediction_predict_post';
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'TV': int.parse(_tvController.text)}),
-    );
+    setState(() {
+      _isLoading = true;
+      _result = '';
+    });
 
-    if (response.statusCode == 200) {
-      final result = jsonDecode(response.body);
+    final url =
+        'https://regg-api-vgpo.onrender.com/predict'; // Replace with your actual API URL
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'TV': tvValue}),
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        setState(() {
+          _result = 'Predicted Price: ${jsonResponse['predicted_price']}';
+        });
+      } else {
+        setState(() {
+          _result = 'Error: ${response.reasonPhrase}';
+        });
+        debugPrint('Error response: ${response.body}');
+      }
+    } catch (e) {
       setState(() {
-        _result = 'Predicted Price: ${result['predicted_price']}';
+        _result = 'Error: $e';
       });
-    } else {
+      debugPrint('Exception: $e');
+    } finally {
       setState(() {
-        _result = 'Error: ${response.reasonPhrase}';
+        _isLoading = false;
       });
     }
   }
@@ -58,42 +83,30 @@ class _PredictionPageState extends State<PredictionPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _tvController,
-                decoration: InputDecoration(labelText: 'TV Advertising Budget'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a value';
-                  }
-                  final number = int.tryParse(value);
-                  if (number == null || number <= 0 || number >= 500) {
-                    return 'Please enter a value between 1 and 499';
-                  }
-                  return null;
-                },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Enter TV Marketing Expense',
               ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _predict,
-                child: Text('Predict'),
-              ),
-              SizedBox(height: 16.0),
-              Text(_result, style: TextStyle(fontSize: 16)),
-            ],
-          ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _predict,
+              child: _isLoading ? CircularProgressIndicator() : Text('Predict'),
+            ),
+            SizedBox(height: 16.0),
+            Text(
+              _result,
+              style: TextStyle(fontSize: 20.0),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _tvController.dispose();
-    super.dispose();
   }
 }
