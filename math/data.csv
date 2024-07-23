@@ -1,16 +1,30 @@
-# Load the dataset
-df = pd.read_csv('data.csv')
+import pandas as pd
 
-# Define the features and target
-X = df.drop('target', axis=1)  # Replace 'target' with your target column name
-y = df['target']  # Replace 'target' with your target column name
+# Load the CSV file
+file_path = 'data.csv'
 
-# Split the data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Read the CSV file, allowing for possible inconsistencies in the number of columns
+df = pd.read_csv(file_path, error_bad_lines=False)
 
-# Train the model
-model = LinearRegression()
-model.fit(X_train, y_train)
+# Check for rows with inconsistent column counts
+with open(file_path, 'r') as file:
+    lines = file.readlines()
 
-# Save the model
-joblib.dump(model, 'linear_regression_model.joblib')
+# Identify the number of columns expected (based on the header or most common count)
+expected_column_count = max([len(line.split(',')) for line in lines])
+
+# Process each line to ensure it has the correct number of columns
+clean_lines = []
+for line in lines:
+    columns = line.split(',')
+    if len(columns) != expected_column_count:
+        print(f"Line with incorrect column count found and removed: {line.strip()}")
+    else:
+        clean_lines.append(line)
+
+# Save the cleaned data to a new file
+clean_file_path = 'cleaned_data.csv'
+with open(clean_file_path, 'w') as file:
+    file.writelines(clean_lines)
+
+print(f"Cleaned data saved to {clean_file_path}")
