@@ -1,0 +1,30 @@
+import pandas as pd
+
+# Load the CSV file
+file_path = 'data.csv'
+
+# Read the CSV file, allowing for possible inconsistencies in the number of columns
+df = pd.read_csv(file_path, error_bad_lines=False)
+
+# Check for rows with inconsistent column counts
+with open(file_path, 'r') as file:
+    lines = file.readlines()
+
+# Identify the number of columns expected (based on the header or most common count)
+expected_column_count = max([len(line.split(',')) for line in lines])
+
+# Process each line to ensure it has the correct number of columns
+clean_lines = []
+for line in lines:
+    columns = line.split(',')
+    if len(columns) != expected_column_count:
+        print(f"Line with incorrect column count found and removed: {line.strip()}")
+    else:
+        clean_lines.append(line)
+
+# Save the cleaned data to a new file
+clean_file_path = 'cleaned_data.csv'
+with open(clean_file_path, 'w') as file:
+    file.writelines(clean_lines)
+
+print(f"Cleaned data saved to {clean_file_path}")
