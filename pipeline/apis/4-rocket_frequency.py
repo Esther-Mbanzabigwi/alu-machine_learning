@@ -19,5 +19,4 @@ if __name__ == '__main__':
                              key=lambda kv: kv[1], reverse=True):
         rurl = "https://api.spacexdata.com/v4/rockets/" + key
         req = requests.get(rurl)
-
         print(req.json()["name"] + ": " + str(value))
