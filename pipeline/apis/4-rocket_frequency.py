@@ -12,7 +12,7 @@ if __name__ == '__main__':
     for launch in r.json():
         if launch["rocket"] in rocket_dict:
             rocket_dict[launch["rocket"]] += 1
-        else:       
+        else:
             rocket_dict[launch["rocket"]] = 1
     sorted_arr = {}
     for key, value in sorted(rocket_dict.items(),
