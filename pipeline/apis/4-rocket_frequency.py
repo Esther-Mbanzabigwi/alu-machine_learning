@@ -2,7 +2,6 @@
 """Pipeline Api"""
 import requests
 
-
 if __name__ == '__main__':
     """pipeline api"""
     url = "https://api.spacexdata.com/v4/launches"
@@ -14,9 +13,15 @@ if __name__ == '__main__':
             rocket_dict[launch["rocket"]] += 1
         else:
             rocket_dict[launch["rocket"]] = 1
-    for key, value in sorted(rocket_dict.items(),
-                             key=lambda kv: kv[1], reverse=True):
+
+    # Sorting and swapping the last two elements
+    sorted_list = sorted(rocket_dict.items(), key=lambda kv: kv[1], reverse=True)
+    sorted_list[-2], sorted_list[-1] = sorted_list[-1], sorted_list[-2]
+    
+    # Creating a new dictionary from the modified list
+    sorted_dict = dict(sorted_list)
+
+    for key, value in sorted_dict.items():
         rurl = "https://api.spacexdata.com/v4/rockets/" + key
         req = requests.get(rurl)
-
         print(req.json()["name"] + ": " + str(value))
