@@ -170,3 +170,4 @@ class NST:
         # Style_Cost
         cost = tf.reduce_mean(tf.square(gram_style - gram_target))
         return cost
+        
