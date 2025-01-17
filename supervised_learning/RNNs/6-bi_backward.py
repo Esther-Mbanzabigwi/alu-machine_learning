@@ -62,6 +62,7 @@ class BidirectionalCell:
             m is the batch size for the data
             h_next is a numpy.ndarray of shape (m, h)
             containing the next hidden state
+            
             Returns: h_pev, the previous hidden state"""
 
         h_x = np.concatenate((h_next, x_t), axis=1)
