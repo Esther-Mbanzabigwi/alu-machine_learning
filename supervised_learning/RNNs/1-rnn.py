@@ -29,3 +29,4 @@ def rnn(rnn_cell, X, h_0):
     new_shape = Y.shape[-1]
     Y = Y.reshape(t, m, new_shape)
     return (H, Y)
+    
